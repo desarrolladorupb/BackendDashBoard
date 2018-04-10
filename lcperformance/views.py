@@ -8,7 +8,7 @@ from lcperformance.serializers import ComiteSerializer, WeeklySerializer, Progra
 from lcperformance.Process.ConsultaLCPerformance import ConsultaLCPerformance
 import json
 from django.views.decorators.csrf import ensure_csrf_cookie
-
+from Expa.ExpaToken import ExpaToken
 class JSONResponse(HttpResponse):
     """
     An HttpResponse that renders its content into JSON.
@@ -74,3 +74,18 @@ def LcPerFormace(request):
         objConsultaLCPerformance = ConsultaLCPerformance()
         lstResultad = objConsultaLCPerformance.consultaNueva(date_initial, date_final, [programs])
         return HttpResponse(json.dumps(lstResultad), content_type="application/json")
+@csrf_exempt
+def inicioSesionExpa(request):
+    correo = request.GET.get('correo')
+    password = request.GET.get('password')
+    objExpaToken = ExpaToken(correo, password)
+    token = objExpaToken.getToken()
+    if token != None:
+        request.session["token"] = token
+        return HttpResponse(json.dumps({"token": token, "result": True}), content_type="application/json")
+    else:
+        jsonData = {
+            "result": False,
+            "mensaje": "Usuario o contraseña incorrectos"
+        }
+        return HttpResponse(json.dumps(jsonData), content_type="application/json")
