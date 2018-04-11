@@ -5,6 +5,32 @@ from lcperformance.models import user_register
 from Expa.ExpaToken import ExpaToken
 class Administracion:
 
+    def currentPeople(self, token):
+        params = {"access_token": token}
+        baseUrl = "https://gis-api.aiesec.org/{version}/{routes}?{params}"
+        url = baseUrl.format(version='v2', routes="current_person.json", params=urlencode(params, True))
+        r = requests.get(url)
+        if int(r.status_code) == 200:
+            persona = json.loads(r.text)
+            return True, persona["person"]
+        else:
+            print("salio mal")
+            return False, None
+
+    def applicationPeople(self, token, idPeople):
+        params = {"access_token": token}
+        baseUrl = "https://gis-api.aiesec.org/{version}/people/{idPeople}/{routes}?{params}"
+        url = baseUrl.format(version='v2', idPeople=idPeople, routes="applications.json", params=urlencode(params, True))
+        r = requests.get(url)
+        if int(r.status_code) == 200:
+            opportinities = json.loads(r.text)
+            return True, opportinities["data"]
+        else:
+            print("salio mal")
+            return False, None
+
+
+
     def currentOffice(self, token):
         params = {"access_token": token}
         baseUrl = "https://gis-api.aiesec.org/{version}/{routes}?{params}"

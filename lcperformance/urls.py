@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from lcperformance.views import Comite, Semanas, Programas, OdStage, LcPerFormace, ProgramasIcx, ProgramasOgx, inicioSesionExpa
+from lcperformance.views import Comite, Semanas, Programas, OdStage, LcPerFormace, ProgramasIcx, ProgramasOgx, inicioSesionExpa, getOpportunities
 
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^od_stage/$', OdStage),
     url(r'^lc_performance/$', LcPerFormace),
     url(r'^inicio_sesion_expa/$', inicioSesionExpa),
+    url(r'^get_opportunities/$', getOpportunities),
 ]

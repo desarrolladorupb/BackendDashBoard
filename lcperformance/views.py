@@ -9,6 +9,7 @@ from lcperformance.Process.ConsultaLCPerformance import ConsultaLCPerformance
 import json
 from django.views.decorators.csrf import ensure_csrf_cookie
 from Expa.ExpaToken import ExpaToken
+from standarsTools.process.Administracion import Administracion
 class JSONResponse(HttpResponse):
     """
     An HttpResponse that renders its content into JSON.
@@ -81,11 +82,40 @@ def inicioSesionExpa(request):
     objExpaToken = ExpaToken(correo, password)
     token = objExpaToken.getToken()
     if token != None:
-        request.session["token"] = token
         return HttpResponse(json.dumps({"token": token, "result": True}), content_type="application/json")
     else:
         jsonData = {
             "result": False,
             "mensaje": "Usuario o contraseña incorrectos"
+        }
+        return HttpResponse(json.dumps(jsonData), content_type="application/json")
+
+@csrf_exempt
+def getOpportunities(request):
+    token = request.GET.get('token')
+    if token != None:
+        objAdministracion = Administracion()
+        resultado, people = objAdministracion.currentPeople(token)
+        if resultado:
+            resultado, aplicaciones = objAdministracion.applicationPeople(token, people['id'])
+            if resultado:
+                return HttpResponse(json.dumps({"data": aplicaciones, "result": True}),
+                                    content_type="application/json")
+            else:
+                jsonData = {
+                    "result": False,
+                    "mensaje": "No existe oportunidad"
+                }
+        else:
+            jsonData = {
+                "result": False,
+                "mensaje": "No hay datos de la persona"
+            }
+            return HttpResponse(json.dumps(jsonData), content_type="application/json")
+
+    else:
+        jsonData = {
+            "result": False,
+            "mensaje": "No existe el token"
         }
         return HttpResponse(json.dumps(jsonData), content_type="application/json")
